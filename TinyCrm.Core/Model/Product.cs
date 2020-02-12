@@ -1,4 +1,7 @@
-﻿namespace TinyCrm.Core.Model
+﻿using System;
+using System.Collections.Generic;
+
+namespace TinyCrm.Core.Model
 {
     public class Product
     { 
@@ -33,5 +36,10 @@
         public ProductCategory Category { get; set; }
 
         public int InStock { get; set; }
+
+        public static implicit operator List<object>(Product v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

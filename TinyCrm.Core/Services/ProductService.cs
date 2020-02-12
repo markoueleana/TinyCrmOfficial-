@@ -61,6 +61,9 @@ namespace TinyCrm.Core.Services
             product.Category = options.ProductCategory;
 
             ProductsList.Add(product);
+            context.Set<Product>()
+                .Add(product);
+            context.SaveChanges();
 
             return true;
         }
