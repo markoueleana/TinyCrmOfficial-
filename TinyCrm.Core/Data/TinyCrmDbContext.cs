@@ -46,6 +46,17 @@ namespace TinyCrm.Core.Data
                   .HasMaxLength(9)
                   .IsFixedLength();
 
+            modelBuilder
+               .Entity<Model.Order>()
+               .ToTable("Order", "core");
+
+            modelBuilder
+                .Entity<Model.OrderProduct>()
+                .ToTable("OrderProduct", "core");
+
+            modelBuilder
+                .Entity<Model.OrderProduct>()
+                .HasKey(op => new { op.OrderId, op.ProductId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

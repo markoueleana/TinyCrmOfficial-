@@ -1,4 +1,6 @@
-﻿namespace TinyCrm.Core.Model.Options
+﻿using System;
+
+namespace TinyCrm.Core.Model.Options
 {
     /// <summary>
     /// 
@@ -8,7 +10,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public int InStock { get; set; }
         /// <summary>
         /// 

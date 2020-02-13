@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using TinyCrm.Core.Model;
 using TinyCrm.Core.Model.Options;
+using System;
 
 namespace TinyCrm.Core.Services
 {
@@ -23,49 +24,50 @@ namespace TinyCrm.Core.Services
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public bool AddProduct(AddProductOptions options)
+        public ApiResult<Product> AddProduct(AddProductOptions options)
         {
+            var result = new ApiResult<Product>();
             if (options == null) {
-                return false;
+                result.ErrorCode = StatusCode.Bad_Request;
+                result.ErrorText = "Null options";
+                return result;
             }
 
-            var product = GetProductById(options.Id); 
-
-            if (product != null) {
-                return false;
-            }
 
             if (string.IsNullOrWhiteSpace(options.Name)) {
-                return false;
+                result.ErrorCode = StatusCode.Bad_Request;
+                result.ErrorText = "Null or empty name";
+                return result;
+                
             }
 
             if (options.Price <= 0) {
-                return false;
+                result.ErrorCode = StatusCode.Bad_Request;
+                result.ErrorText = "Negative of zero price ";
+                return result;
             }
 
             if (options.ProductCategory ==
               ProductCategory.Invalid) {
-                return false;
+                result.ErrorCode = StatusCode.Bad_Request;
+                result.ErrorText = "Invalid category";
+                return result;
             }
 
-            product = new Product() {
-                Id = options.Id,
+           var product = new Product() {
                 Name = options.Name,
                 Price = options.Price,
                 Category = options.ProductCategory
             };
 
-            product.Id = options.Id;
-            product.Name = options.Name;
-            product.Price = options.Price;
-            product.Category = options.ProductCategory;
 
+            result.Data = product;
             ProductsList.Add(product);
             context.Set<Product>()
                 .Add(product);
             context.SaveChanges();
-
-            return true;
+            
+            return result ;
         }
 
         /// <summary>
@@ -74,16 +76,16 @@ namespace TinyCrm.Core.Services
         /// <param name="productId"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public bool UpdateProduct(string productId,
+        public Product UpdateProduct(Guid productId,
             UpdateProductOptions options)
         {
             if (options == null) {
-                return false;
+                return null;
             }
 
             var product = GetProductById(productId);
             if (product == null) { 
-                return false; 
+                return null; 
             }
 
             if (!string.IsNullOrWhiteSpace(options.Description)) {
@@ -92,12 +94,12 @@ namespace TinyCrm.Core.Services
 
             if (options.Price != null &&
               options.Price <= 0) {
-                return false;
+                return null;
             }
 
             if (options.Price != null) {
                 if (options.Price <= 0) {
-                    return false;
+                    return null;
                 } else {
                     product.Price = options.Price.Value;
                 }
@@ -105,10 +107,11 @@ namespace TinyCrm.Core.Services
 
             if (options.Discount != null &&
               options.Discount < 0) {
-                return false;
+                return null;
             }
 
-            return true;
+            return 
+                product;
         }
         
         /// <summary>
@@ -116,9 +119,10 @@ namespace TinyCrm.Core.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Product GetProductById(string id)
+        public Product GetProductById(Guid id)
         {
-            if (string.IsNullOrWhiteSpace(id)) {
+            var o = new Guid();
+            if (o == id) {
                 return null;
             } 
 

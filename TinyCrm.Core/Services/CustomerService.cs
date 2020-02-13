@@ -28,27 +28,32 @@ namespace TinyCrm.Core.Services
                 .Set<Customer>()
                 .AsQueryable();
 
-            if (options.Id != null) {
+            if (options.Id != null)
+            {
                 query = query.Where(
-                    c => c.Id == options.Id);
+                    c => c.Id.Equals(options.Id));
             }
 
-            if (options.VatNumber != null) {
+            if (options.VatNumber != null)
+            {
                 query = query.Where(
                     c => c.VatNumber == options.VatNumber);
             }
 
-            if (options.Email != null) {
+            if (options.Email != null)
+            {
                 query = query.Where(
                     c => c.Email == options.Email);
             }
 
-            if (!string.IsNullOrWhiteSpace(options.FistName)) {
+            if (!string.IsNullOrWhiteSpace(options.FistName))
+            {
                 query = query
                       .Where(c => c.FirstName.Contains(options.FistName));
             }
 
             return query.ToList();
+
         }
 
         public Customer Create(CreateCustomerOptions options) 
@@ -62,6 +67,13 @@ namespace TinyCrm.Core.Services
                 || string.IsNullOrWhiteSpace(options.VatNumber)) {
                 return null;
             }
+
+
+            var vatnumlength = options.VatNumber.Count();
+            if (vatnumlength!=9) {
+                return null;
+            }
+
 
             var customer = new Customer();
 

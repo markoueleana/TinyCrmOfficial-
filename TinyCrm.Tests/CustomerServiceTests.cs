@@ -8,29 +8,32 @@ using TinyCrm.Core.Model.Options;
 
 namespace TinyCrm.Tests
 {
-    public class CustomerServiceTests
+    public class CustomerServiceTests:IClassFixture<TinyCrmFixtures>
     {
         private TinyCrmDbContext context_;
+        private ICustomerService service_;
 
-        public CustomerServiceTests()
+
+        public CustomerServiceTests(TinyCrmFixtures fixtures)
         {
-            context_ = new TinyCrmDbContext();
+            context_ = fixtures.Context_;
+            service_ = fixtures.Customer;
+            
         }
 
         [Fact]
         public void CreateCustomer_Success()
         {
-            ICustomerService customerService =
-                new CustomerService(context_);
+          
 
             var options = new CreateCustomerOptions()
             {   
                 Email = "dd@dfdd.gr",
                 FirstName = "Dimmitrios",
-                VatNumber = "1170012899"
+                VatNumber = "117001289"
             };
 
-            var customer = customerService.Create(options);
+            var customer = service_.Create(options);
 
             Assert.NotNull(customer);
             Assert.Equal(options.Email, customer.Email);
@@ -45,7 +48,7 @@ namespace TinyCrm.Tests
             
             };
 
-            var lookupcustomer = customerService.Search(searchcustomer);
+            var lookupcustomer = service_.Search(searchcustomer);
             
             Assert.True(lookupcustomer.Count() == 1);
             Assert.Single(lookupcustomer);
@@ -63,11 +66,24 @@ namespace TinyCrm.Tests
                 
             };
 
-            ICustomerService customerService = new CustomerService(context_);
-            var customer = customerService.Create(options);
+           
+            var customer = service_.Create(options);
             Assert.Null(customer);
 
+
+            //customer with vatnumber count >9
+            var options1 = new CreateCustomerOptions()
+            {
+                Email = "ddd@mark.gr",
+                FirstName = "Vivi",
+                VatNumber="1234567890"
+                
+            };
+            var customer1 = service_.Create(options1);
+            Assert.Null(customer1);
+
         }
+       
         [Fact]
         public void CreateCustomer_Fail_Null_Email()
         {
@@ -95,19 +111,55 @@ namespace TinyCrm.Tests
 
             };
 
-            ICustomerService customerService = 
-                new CustomerService(context_);
 
-            var customer1 = customerService.Create(options1);
+            var customer1 = service_.Create(options1);
             Assert.Null(customer1);
 
-            var customer2 = customerService.Create(options2);
+            var customer2 = service_.Create(options2);
             Assert.Null(customer2);
 
-            var customer3 = customerService.Create(options3);
+            var customer3 = service_.Create(options3);
             Assert.Null(customer3);
 
 
+        }
+
+        [Fact]
+        public void Search_Success()
+        {
+            
+            var options = new SearchCustomerOptions()
+            {
+                Id = 1,
+                VatNumber = "1170012899",
+                Email = "dd@dfdd.gr",
+                FistName = "Dimmitrios"
+
+            };
+
+            var search = service_.Search(options);
+            var length = search.Count();
+            Assert.True(length == 1);
+        }
+
+        [Fact]
+        public void Search_Fail()
+        {
+           
+
+            //when options null
+            var options = new SearchCustomerOptions()
+            { 
+              
+            };
+            var search = service_.Search(options);
+            var length = search.Count();
+            Assert.True(length==0);
+
+            
+        
+        
+        
         }
         
 

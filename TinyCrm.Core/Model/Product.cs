@@ -8,7 +8,7 @@ namespace TinyCrm.Core.Model
         /// <summary>
         /// 
         /// </summary>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// 
@@ -37,9 +37,5 @@ namespace TinyCrm.Core.Model
 
         public int InStock { get; set; }
 
-        public static implicit operator List<object>(Product v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

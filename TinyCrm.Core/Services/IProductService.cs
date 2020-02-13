@@ -1,5 +1,6 @@
 ﻿using TinyCrm.Core.Model.Options;
 using TinyCrm.Core.Model;
+using System;
 
 namespace TinyCrm.Core.Services
 {
@@ -13,7 +14,7 @@ namespace TinyCrm.Core.Services
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        bool AddProduct(AddProductOptions options);
+        ApiResult< Product> AddProduct(AddProductOptions options);
 
         /// <summary>
         /// 
@@ -21,7 +22,7 @@ namespace TinyCrm.Core.Services
         /// <param name="productId"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        bool UpdateProduct(string productId,
+        Product UpdateProduct(Guid productId,
             UpdateProductOptions options);
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace TinyCrm.Core.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Product GetProductById(string id);
+        Product GetProductById(Guid id);
         public int SumOfStocks();
     }
 }
