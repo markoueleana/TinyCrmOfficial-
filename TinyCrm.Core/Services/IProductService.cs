@@ -1,6 +1,7 @@
 ﻿using TinyCrm.Core.Model.Options;
 using TinyCrm.Core.Model;
 using System;
+using System.Collections.Generic;
 
 namespace TinyCrm.Core.Services
 {
@@ -24,7 +25,8 @@ namespace TinyCrm.Core.Services
         /// <returns></returns>
         Product UpdateProduct(Guid productId,
             UpdateProductOptions options);
-
+        List<Product> SearchProduct(
+          SearchProductOptions options);
         /// <summary>
         /// 
         /// </summary>

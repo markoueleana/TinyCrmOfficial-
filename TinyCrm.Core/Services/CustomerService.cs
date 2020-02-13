@@ -20,41 +20,48 @@ namespace TinyCrm.Core.Services
         public List<Customer> Search(
             SearchCustomerOptions options)
         {
-            if (options == null) {
-                return null;
+            
+             if (options == null){
+
+                    return null;
+             }
+
+            if (string.IsNullOrEmpty(options.Email)
+            
+                && string.IsNullOrEmpty(options.FistName)
+            
+                && string.IsNullOrEmpty(options.VatNumber)){ 
+
+                return null; 
             }
 
             var query = context
-                .Set<Customer>()
-                .AsQueryable();
+                    .Set<Customer>()
+                    .AsQueryable();
 
-            if (options.Id != null)
-            {
-                query = query.Where(
-                    c => c.Id.Equals(options.Id));
+
+
+                if (!string.IsNullOrWhiteSpace(options.VatNumber)){ 
+                    query = query.Where(
+                        c => c.VatNumber == options.VatNumber);
+                }
+
+                if (!string.IsNullOrWhiteSpace(options.Email)){
+                    query = query.Where(
+                        c => c.Email == options.Email);
+                }
+
+                if (!string.IsNullOrWhiteSpace(options.FistName))
+                {
+                    query = query
+                          .Where(c => c.FirstName.Contains(options.FistName));
+                }
+
+                return query.ToList();
+            
             }
 
-            if (options.VatNumber != null)
-            {
-                query = query.Where(
-                    c => c.VatNumber == options.VatNumber);
-            }
-
-            if (options.Email != null)
-            {
-                query = query.Where(
-                    c => c.Email == options.Email);
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.FistName))
-            {
-                query = query
-                      .Where(c => c.FirstName.Contains(options.FistName));
-            }
-
-            return query.ToList();
-
-        }
+        
 
         public Customer Create(CreateCustomerOptions options) 
         {

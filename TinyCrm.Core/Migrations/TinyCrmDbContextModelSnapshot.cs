@@ -63,7 +63,7 @@ namespace TinyCrm.Core.Migrations
                     b.Property<DateTimeOffset>("CreateDatetime")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("CustomerId")
+                    b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeliveryAddress")
@@ -77,6 +77,21 @@ namespace TinyCrm.Core.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Order","core");
+                });
+
+            modelBuilder.Entity("TinyCrm.Core.Model.OrderProduct", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("OrderId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderProduct","core");
                 });
 
             modelBuilder.Entity("TinyCrm.Core.Model.Product", b =>
@@ -112,7 +127,24 @@ namespace TinyCrm.Core.Migrations
                 {
                     b.HasOne("TinyCrm.Core.Model.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TinyCrm.Core.Model.OrderProduct", b =>
+                {
+                    b.HasOne("TinyCrm.Core.Model.Order", "Order")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TinyCrm.Core.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

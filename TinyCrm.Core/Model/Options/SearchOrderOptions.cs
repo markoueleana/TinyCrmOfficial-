@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TinyCrm.Core.Model
+namespace TinyCrm.Core.Model.Options
 {
-    public class Order
+    public class SearchOrderOptions
     {
         public Guid Id { get; set; }
 
@@ -15,15 +15,5 @@ namespace TinyCrm.Core.Model
         public Customer Customer { get; set; }
 
         public Guid CustomerId { get; set; }
-        public DeliveryStatus Status { get; set; }
-
-        public List<OrderProduct> OrderProducts { get; set; }
-        
-        
-        public Order()
-        {
-            OrderProducts = new List<OrderProduct>();
-        }
     }
-    
 }

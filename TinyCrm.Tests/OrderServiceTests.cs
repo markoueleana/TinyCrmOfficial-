@@ -15,12 +15,14 @@ namespace TinyCrm.Tests
         private TinyCrmDbContext context;
         private ICustomerService services;
         public IProductService servicesp;
+        public IOrderService order;
         public OrderServiceTests(TinyCrmFixtures fixture)
         {
             context = fixture.Context_;
             services = fixture.Customer;
+            order = fixture.Order;
         }
-        [Fact]
+/*        [Fact]
         public void CreateOrder()
         {
 
@@ -83,8 +85,55 @@ namespace TinyCrm.Tests
                 .SingleOrDefault(o => o.Id == order.Id);
             Assert.NotNull(dbOrder);
             Assert.Equal(order.DeliveryAddress, dbOrder.DeliveryAddress);
+        }*/
+
+        [Fact]
+        public void CreateOrders()
+        {
+            var options = new CreateOrderOptions()
+            {
+                CreateDatetime=DateTimeOffset.Now,
+                DeliveryAddress="Panormou"
+                
+            };
+
+            Assert.NotNull(options);
+
+            var customeroptions = new SearchCustomerOptions()
+            {
+                VatNumber= "117001289"
+            };
+
+
+            var productoptions = new SearchProductOptions()
+            {
+                Id=Guid.Parse("E50612FD-49C3-4C33-93C2-08D7B0C9B3D1"),
+                Name = "13-ACamera"
+            };
+
+
+            var newOrder = order
+                .CreateOrder(options,
+                            customeroptions,
+                            productoptions);
+            Assert.NotNull(newOrder);
+            Assert.Equal(StatusCode.Success, newOrder.ErrorCode);
         }
 
+        [Fact]
+        public void SearchOrder_Success() 
+        {
+
+            var orderoptions = new SearchOrderOptions()
+            { 
+                Id=Guid
+                .Parse("213C5FFB-5B12-4DDA-F326-08D7B0CA21A9")
+            };
+            var search = order.SearchOrder(orderoptions);
+            var length = search.Count();
+            Assert.NotNull(search);
+            Assert.True(length!=0);
+        }
 
     }
 }

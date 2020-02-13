@@ -57,11 +57,13 @@ namespace TinyCrm.Core.Services
            var product = new Product() {
                 Name = options.Name,
                 Price = options.Price,
-                Category = options.ProductCategory
+                Category = options.ProductCategory,
+                Description=options.Description
             };
 
 
             result.Data = product;
+            result.ErrorCode = StatusCode.Success;
             ProductsList.Add(product);
             context.Set<Product>()
                 .Add(product);
@@ -135,6 +137,55 @@ namespace TinyCrm.Core.Services
                 Sum(c => c.InStock);
 
             return sum;
+        }
+
+
+        public List<Product> SearchProduct(
+           SearchProductOptions options)
+        {
+
+            if (options == null)
+            {
+
+                return null;
+            }
+
+            if (options.Id== new Guid()
+
+                && string.IsNullOrEmpty(options.Name)
+
+                && options.Category==ProductCategory.Invalid)
+            {
+
+                return null;
+            }
+
+            var query = context
+                    .Set<Product>()
+                    .AsQueryable();
+
+
+
+            if (options.Id!=new Guid())
+            {
+                query = query.Where(
+                    c => c.Id == options.Id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.Name))
+            {
+                query = query.Where(
+                    c => c.Name == options.Name);
+            }
+
+            if (options.Category!=ProductCategory.Invalid)
+            {
+                query = query
+                      .Where(c => c.Category==options.Category);
+            }
+
+            return query.ToList();
+
         }
     }
 }

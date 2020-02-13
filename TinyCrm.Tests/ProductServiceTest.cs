@@ -23,32 +23,19 @@ namespace TinyCrm.Tests
 
         }
 
-   /*     [Fact]*/
-/*        public void GetProductByIdService_Success()
-        {
-            
-            var getid = services_.GetProductById("1");
-            var productid = context_.Set<Product>()
-                .Where(p => p.Equals(getid)).ToList();
 
-            Assert.Equal(getid, productid.SingleOrDefault()); 
-
-        }*/
-/*
         [Fact]
-        public void GetProductByIdService_Fail_Null()
+        public void SearchProduct_Success()
         {
-            
+            var option = new SearchProductOptions()
+            {
+                Name = "13-ACamera",
+            };
 
-            var getid1 = services_.GetProductById(null);
-            Assert.Null(getid1);
+            var results = services_.SearchProduct(option);
 
-            var getid2 = services_.GetProductById("");
-            Assert.Null(getid2);
-
-            var getid3 = services_.GetProductById(" ");
-            Assert.Null(getid3);
-        }*/
+            Assert.NotNull(results);
+        }
 
         [Fact]
         public void AddProductService_Success()
@@ -69,10 +56,7 @@ namespace TinyCrm.Tests
 
             Assert.NotNull(product);
 
-        /*    var check = context_.Set<Product>().AsQueryable();
-            check = check.Where(p => p.Id == options.Id);
-            var length = check.Count();
-            Assert.Equal(1, length);*/
+       
            
             Assert.Equal(StatusCode.Success,product.ErrorCode);
 
@@ -91,7 +75,7 @@ namespace TinyCrm.Tests
             };
 
            var addproduct = services_.AddProduct(options);
-           Assert.Equal(StatusCode.NotFound, addproduct.ErrorCode);
+           Assert.Equal(StatusCode.Bad_Request, addproduct.ErrorCode);
 
             //when Id is null
             var options2 = new AddProductOptions()
@@ -102,7 +86,7 @@ namespace TinyCrm.Tests
             };
 
             var addproduct2 = services_.AddProduct(options2);
-            Assert.Equal(StatusCode.NotFound, addproduct2.ErrorCode);
+            Assert.Equal(StatusCode.Bad_Request, addproduct2.ErrorCode);
 
             //when Name is null
             var options3 = new AddProductOptions()
@@ -114,7 +98,7 @@ namespace TinyCrm.Tests
             };
 
             var addproduct3 = services_.AddProduct(options3);
-            Assert.Equal(StatusCode.NotFound, addproduct3.ErrorCode);
+            Assert.Equal(StatusCode.Bad_Request, addproduct3.ErrorCode);
 
             //when Price < 0
             var options4 = new AddProductOptions()
@@ -125,7 +109,7 @@ namespace TinyCrm.Tests
             };
 
             var addproduct4 = services_.AddProduct(options4);
-            Assert.Equal(StatusCode.NotFound, addproduct4.ErrorCode);
+            Assert.Equal(StatusCode.Bad_Request, addproduct4.ErrorCode);
 
             //when Price=0
             var options5 = new AddProductOptions()
@@ -136,7 +120,7 @@ namespace TinyCrm.Tests
             };
 
             var addproduct5 = services_.AddProduct(options5);
-            Assert.Equal(StatusCode.NotFound, addproduct5.ErrorCode);
+            Assert.Equal(StatusCode.Bad_Request, addproduct5.ErrorCode);
 
             //when ProductCategory is Invalid 
             var options6 = new AddProductOptions()
@@ -149,7 +133,7 @@ namespace TinyCrm.Tests
             };
 
             var addproduct6 = services_.AddProduct(options6);
-            Assert.Equal(StatusCode.NotFound, addproduct6.ErrorCode);
+            Assert.Equal(StatusCode.Bad_Request, addproduct6.ErrorCode);
 
         }
 

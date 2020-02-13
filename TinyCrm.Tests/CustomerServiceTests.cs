@@ -130,10 +130,8 @@ namespace TinyCrm.Tests
             
             var options = new SearchCustomerOptions()
             {
-                Id = 1,
-                VatNumber = "1170012899",
-                Email = "dd@dfdd.gr",
-                FistName = "Dimmitrios"
+                VatNumber = "117001289",
+              
 
             };
 
@@ -145,16 +143,13 @@ namespace TinyCrm.Tests
         [Fact]
         public void Search_Fail()
         {
-           
 
-            //when options null
-            var options = new SearchCustomerOptions()
-            { 
-              
-            };
+
+            var options = new SearchCustomerOptions();
+            
             var search = service_.Search(options);
-            var length = search.Count();
-            Assert.True(length==0);
+            
+            Assert.Null(search);
 
             
         
