@@ -7,16 +7,13 @@ using TinyCrm.Core.Services;
 
 namespace TinyCrm.Tests
 {
-  public class TinyCrmFixtures
+  public class TinyCrmFixture
     {
         public TinyCrmDbContext Context_ { get; private set; }
         public IProductService Products { get; private set; }
         public ICustomerService Customer { get; private set; }
-        
         public IOrderService Order { get; private set; }
-
-
-        public TinyCrmFixtures() 
+        public TinyCrmFixture() 
         {
             Order = new OrderService(Context_);
             Context_= new TinyCrmDbContext();

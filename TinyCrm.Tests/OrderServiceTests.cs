@@ -10,130 +10,100 @@ using TinyCrm.Core.Services;
 
 namespace TinyCrm.Tests
 {
-   public class OrderServiceTests: IClassFixture<TinyCrmFixtures>
+    public class OrderServiceTests :
+          IClassFixture<TinyCrmFixture>
     {
-        private TinyCrmDbContext context;
-        private ICustomerService services;
-        public IProductService servicesp;
-        public IOrderService order;
-        public OrderServiceTests(TinyCrmFixtures fixture)
+        private ICustomerService customer_;
+        private IProductService products_;
+        private TinyCrmDbContext context_;
+        private IOrderService order_;
+        private ProductServiceTest productServiceTests_;
+        private CustomerServiceTests customerServiceTests_;
+
+
+        public OrderServiceTests(
+            TinyCrmFixture fixture)
         {
-            context = fixture.Context_;
-            services = fixture.Customer;
-            order = fixture.Order;
+            productServiceTests_ = new ProductServiceTest(fixture);
+            context_ = fixture.Context_;
+            customer_ = fixture.Customer;
+            products_ = fixture.Products;
+            order_ = fixture.Order;
+            customerServiceTests_ = new CustomerServiceTests(fixture);
         }
-/*        [Fact]
-        public void CreateOrder()
+
+        [Fact]
+        public void CreateOrder_Success()
         {
+            var customer = customerServiceTests_.CreateCustomer_Success();
+            var p1 = productServiceTests_.AddProductService_Success();
+            var p2 = productServiceTests_.AddProductService_Success();
 
-            // Step 1: Create products
-            var poptions = new AddProductOptions()
+            var orderOptions = new CreateOrderOptions
             {
-                Name = "product 1",
-                Price = 155.33M,
-                ProductCategory = ProductCategory.Computers
+                CustomerId = customer.Id,
+                ProductIds = new List<Guid>() { p1.Id, p2.Id }
             };
-            var presult1 = servicesp.AddProduct(poptions);
-            Assert.Equal(StatusCode.Success, presult1.ErrorCode);
-            poptions = new AddProductOptions()
+            var createorder = order_.CreateOrder(orderOptions);
+
+            Assert.True(createorder.Success);
+
+
+            var orderId = createorder.Data.Id;
+            var order = context_.Set<Order>()
+                //.Include(o=> o.OrderProducts)
+                .Where(o => o.Id == orderId)
+                .SingleOrDefault();
+            Assert.NotNull(order);
+
+            foreach (var id in orderOptions.ProductIds)
             {
-                Name = "product 2",
-                Price = 113.33M,
-                ProductCategory = ProductCategory.Computers
-            };
-            var presult2 = servicesp.AddProduct(poptions);
-            Assert.Equal(StatusCode.Success, presult2.ErrorCode);
+                var op = order.OrderProducts
+                    .Where(p => p.ProductId == id)
+                    .SingleOrDefault();
 
+                Assert.NotNull(op);
+            }
+        }
 
+        [Fact]
+        public void GetOrder()
+        {
+            var c1 = new TinyCrmDbContext();
 
-            // Step 2: Create a new customer
-            var options = new CreateCustomerOptions()
+            var customer = new Customer()
             {
                 FirstName = "Dimitris",
-                VatNumber = $"11{DateTime.Now:fffffff}",
-                Email = "dd@Codehub.com",
-            };
-            var customer = services.Create(options);
-            Assert.NotNull(customer);
-
-
-
-            // Step 3: Create the order
-            var order = new Order()
-            {
-                DeliveryAddress = "Athens",
-                Status =DeliveryStatus.Pending,
-                CreateDatetime = DateTimeOffset.Now
+                VatNumber = $"123{DateTimeOffset.Now:ffffff}"
             };
 
+            c1.Add(customer);
+            c1.SaveChanges();
 
-            // Step 4: Add products
-            order.OrderProducts.Add(
-                new OrderProduct()
-                {
-                    Product = presult1.Data
-                });
-            order.OrderProducts.Add(
-                new OrderProduct()
-                {
-                    Product = presult2.Data
-                });
-            customer.Orders.Add(order);
-            context.SaveChanges();
-            var dbOrder = context
+            customer.FirstName = "eleana";
+            var cust = customer;
+            cust.Id = 0;
+
+            
+
+            var orderId = Guid.Parse("3C516069-F3A1-4CB7-8225-08D7B14E7C62");
+
+            var q = context_
+                .Set<OrderProduct>()
+                .Where(o => o.OrderId == orderId)
+                .Select(o => o.Order.Customer);
+            //.ToList();
+
+            var ord = q.ToList();
+
+
+
+            var order = context_
                 .Set<Order>()
-                .SingleOrDefault(o => o.Id == order.Id);
-            Assert.NotNull(dbOrder);
-            Assert.Equal(order.DeliveryAddress, dbOrder.DeliveryAddress);
-        }*/
-
-        [Fact]
-        public void CreateOrders()
-        {
-            var options = new CreateOrderOptions()
-            {
-                CreateDatetime=DateTimeOffset.Now,
-                DeliveryAddress="Panormou"
-                
-            };
-
-            Assert.NotNull(options);
-
-            var customeroptions = new SearchCustomerOptions()
-            {
-                VatNumber= "117001289"
-            };
+                .ToList()
+                .Where(o => o.Id == orderId);
 
 
-            var productoptions = new SearchProductOptions()
-            {
-                Id=Guid.Parse("E50612FD-49C3-4C33-93C2-08D7B0C9B3D1"),
-                Name = "13-ACamera"
-            };
-
-
-            var newOrder = order
-                .CreateOrder(options,
-                            customeroptions,
-                            productoptions);
-            Assert.NotNull(newOrder);
-            Assert.Equal(StatusCode.Success, newOrder.ErrorCode);
         }
-
-        [Fact]
-        public void SearchOrder_Success() 
-        {
-
-            var orderoptions = new SearchOrderOptions()
-            { 
-                Id=Guid
-                .Parse("213C5FFB-5B12-4DDA-F326-08D7B0CA21A9")
-            };
-            var search = order.SearchOrder(orderoptions);
-            var length = search.Count();
-            Assert.NotNull(search);
-            Assert.True(length!=0);
-        }
-
     }
 }

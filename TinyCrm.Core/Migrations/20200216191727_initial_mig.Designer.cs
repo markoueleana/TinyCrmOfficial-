@@ -10,8 +10,8 @@ using TinyCrm.Core.Data;
 namespace TinyCrm.Core.Migrations
 {
     [DbContext(typeof(TinyCrmDbContext))]
-    [Migration("20200213211240_initial")]
-    partial class initial
+    [Migration("20200216191727_initial_mig")]
+    partial class initial_mig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,10 @@ namespace TinyCrm.Core.Migrations
 
             modelBuilder.Entity("TinyCrm.Core.Model.Customer", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -68,6 +69,9 @@ namespace TinyCrm.Core.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("CustomerId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeliveryAddress")
                         .HasColumnType("nvarchar(max)");
 
@@ -76,7 +80,7 @@ namespace TinyCrm.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId1");
 
                     b.ToTable("Order","core");
                 });
@@ -129,9 +133,7 @@ namespace TinyCrm.Core.Migrations
                 {
                     b.HasOne("TinyCrm.Core.Model.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId1");
                 });
 
             modelBuilder.Entity("TinyCrm.Core.Model.OrderProduct", b =>

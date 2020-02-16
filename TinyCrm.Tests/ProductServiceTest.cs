@@ -11,12 +11,12 @@ using System.Linq;
 namespace TinyCrm.Tests
 {
     public class ProductServiceTest:
-        IClassFixture<TinyCrmFixtures>
+        IClassFixture<TinyCrmFixture>
     {
         private TinyCrmDbContext context_;
         private IProductService services_;
 
-        public ProductServiceTest(TinyCrmFixtures fixture)
+        public ProductServiceTest(TinyCrmFixture fixture)
         {
             context_ = fixture.Context_;
             services_ = fixture.Products;
@@ -38,16 +38,16 @@ namespace TinyCrm.Tests
         }
 
         [Fact]
-        public void AddProductService_Success()
+        public Product AddProductService_Success()
         {
           
 
             var options = new AddProductOptions()
             {
-                Name="13-ACamera",
+                Name="13-Laptop",
                 Price = 12.5m,
                 Description = "It is Updated",
-                ProductCategory = Core.Model.ProductCategory.Cameras
+                ProductCategory = Core.Model.ProductCategory.Laptops
 
                 
             };
@@ -60,6 +60,7 @@ namespace TinyCrm.Tests
            
             Assert.Equal(StatusCode.Success,product.ErrorCode);
 
+            return product.Data;
 
         }
         

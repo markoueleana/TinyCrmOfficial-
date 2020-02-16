@@ -8,105 +8,65 @@ using TinyCrm.Core.Model.Options;
 
 namespace TinyCrm.Core.Services
 {
-   public class OrderService:IOrderService
+
+    public class OrderService : IOrderService
     {
-        private TinyCrmDbContext context;
-        public OrderService(TinyCrmDbContext db)
+        private readonly TinyCrmDbContext context_;
+
+        private readonly ICustomerService customer_;
+
+        private readonly IProductService product_;
+
+        public OrderService(
+            TinyCrmDbContext context
+            )
         {
-            context = db;
+            context_ = context;
+            customer_ = new CustomerService(context_);
+            product_ = new ProductService(context_);
+
         }
         public ApiResult<Order> CreateOrder(
-                CreateOrderOptions orderOptions,
-                SearchCustomerOptions customerOptions,
-                SearchProductOptions productOptions) 
+            CreateOrderOptions createoptions)
         {
-            var servicesCust = new CustomerService(context);
-            var customer = servicesCust.Search(customerOptions);
-            var orderCust = customer[0];
-
-
-            var productServ = new ProductService(context);
-            var searchProduct = productServ.SearchProduct(productOptions);
-            var productOfOrder = searchProduct[0];
-
-
-            var results = new ApiResult<Order>();
-
-            if (orderOptions == null) {
-                results.ErrorCode = StatusCode.Bad_Request;
-                results.ErrorText = "Null options";
-                return results;
+            if (createoptions == null)
+            {
+                return new ApiResult<Order>(
+                    StatusCode.Bad_Request, "null options");
             }
 
-
-            var order = new Order()
+            var cresult = customer_
+                .GetCustomerById(createoptions.CustomerId);
+            if (!cresult.Success)
             {
-                DeliveryAddress=orderOptions.DeliveryAddress,
-                Customer=orderCust,
-                CustomerId=orderCust.Id
-               
-             };
+                return ApiResult<Order>.Create(cresult);
+            }
 
-            var orderproduct = new OrderProduct()
+            var order = new Order();
+
+            foreach (var id in createoptions.ProductIds)
             {
-                Order = order,
-                Product = productOfOrder,
-                OrderId = order.Id,
-                ProductId = productOfOrder.Id
-            };
+                var prodResult = product_
+                     .GetProductById(id);
 
-            context.Set<Order>().Add(order);
-            context.SaveChanges();
-            context.Set<OrderProduct>().Add(orderproduct);
-            context.SaveChanges();
-            results.Data = order;
-            results.ErrorCode = StatusCode.Success;
-            results.ErrorText = "Ok";
-            return results;
+                if (!prodResult.Success)
+                {
+                    return ApiResult<Order>.Create(
+                        prodResult);
+                }
 
+                order.OrderProducts.Add(
+                    new OrderProduct()
+                    {
+                        Product = prodResult.Data
+                    });
+            }
+
+            context_.Add(order);
+            cresult.Data.Orders.Add(order);
+            context_.SaveChanges();
+
+            return ApiResult<Order>.CreateSuccessful(order);
         }
-
-
-
-        public List<Order> SearchOrder(SearchOrderOptions options)
-        {
-          
-            if (options == null) 
-            {
-                return null;
-            }
-            if (options.Id == new Guid()
-
-                && options.CustomerId == new Guid()
-
-                && string.IsNullOrEmpty(options.Customer.VatNumber)){
-
-                return null;
-            }
-
-            var orders = context
-                    .Set<Order>().
-                    AsQueryable();
-               
-            if (options.Id != new Guid()){
-
-                orders = orders.Where(
-                    o => o.Id == options.Id);
-            }
-
-            if (options.CustomerId != new Guid()) {
-
-                orders = orders.Where
-                    (o => o.CustomerId == options.CustomerId);
-            }
-/*
-            if (!string.IsNullOrWhiteSpace(options.Customer.VatNumber)){
-                orders = orders.Where
-                    (o => o.Customer.VatNumber==options.Customer.VatNumber);
-            }*/
-            return orders.ToList();
-        }
-        
-       
     }
 }

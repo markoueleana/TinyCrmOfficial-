@@ -17,83 +17,91 @@ namespace TinyCrm.Core.Services
             context = dbContext;
         }
 
-        public List<Customer> Search(
+        public ApiResult<Customer> GetCustomerById(
+         int customerId)
+        {
+            var customer = Search(
+                new SearchCustomerOptions()
+                {
+                    Id = customerId
+                })
+                .SingleOrDefault();
+
+            if (customer == null)
+            {
+                return new ApiResult<Customer>(
+                    StatusCode.NotFound, $"Customer {customerId} not found");
+            }
+
+            return new ApiResult<Customer>()
+            {
+                ErrorCode = StatusCode.Success,
+                Data = customer
+            };
+        }
+
+        public IQueryable<Customer> Search(
             SearchCustomerOptions options)
         {
-            
-             if (options == null){
-
-                    return null;
-             }
-
-            if (string.IsNullOrEmpty(options.Email)
-            
-                && string.IsNullOrEmpty(options.FistName)
-            
-                && string.IsNullOrEmpty(options.VatNumber)){ 
-
-                return null; 
+            if (options == null)
+            {
+                return null;
             }
 
             var query = context
-                    .Set<Customer>()
-                    .AsQueryable();
+                .Set<Customer>()
+                .AsQueryable();
 
-
-
-                if (!string.IsNullOrWhiteSpace(options.VatNumber)){ 
-                    query = query.Where(
-                        c => c.VatNumber == options.VatNumber);
-                }
-
-                if (!string.IsNullOrWhiteSpace(options.Email)){
-                    query = query.Where(
-                        c => c.Email == options.Email);
-                }
-
-                if (!string.IsNullOrWhiteSpace(options.FistName))
-                {
-                    query = query
-                          .Where(c => c.FirstName.Contains(options.FistName));
-                }
-
-                return query.ToList();
-            
+            if (options.Id != null)
+            {
+                query = query.Where(
+                    c => c.Id == options.Id);
             }
 
-        
+            if (options.VatNumber != null)
+            {
+                query = query.Where(
+                    c => c.VatNumber == options.VatNumber);
+            }
 
-        public Customer Create(CreateCustomerOptions options) 
+            if (options.Email != null)
+            {
+                query = query.Where(
+                    c => c.Email == options.Email);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.FistName))
+            {
+                query = query
+                      .Where(c => c.FirstName.Contains(options.FistName));
+            }
+
+            return query;
+        }
+
+        public Customer Create(CreateCustomerOptions options)
         {
-           if (options == null) {
+            if (options == null)
+            {
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(options.Email) 
-                || !options.Email.Contains("@")
-                || string.IsNullOrWhiteSpace(options.VatNumber)) {
+            if (string.IsNullOrWhiteSpace(options.Email) ||
+                !options.Email.Contains("@") ||
+                string.IsNullOrWhiteSpace(options.VatNumber))
+            {
                 return null;
             }
-
-
-            var vatnumlength = options.VatNumber.Count();
-            if (vatnumlength!=9) {
-                return null;
-            }
-
 
             var customer = new Customer();
+            customer.VatNumber = options.VatNumber;
+            customer.Email = options.Email;
+            customer.FirstName = options.FirstName;
 
-            using (var context = new TinyCrmDbContext())
-            {
-                customer.VatNumber = options.VatNumber;
-                customer.Email = options.Email;
-                customer.FirstName = options.FirstName;
+            context.Set<Customer>().Add(customer);
+            context.SaveChanges();
 
-                context.Set<Customer>().Add(customer);
-                context.SaveChanges();
-                return customer;
-            }
-        } 
+            return customer;
+        }
+    } 
     }
-}

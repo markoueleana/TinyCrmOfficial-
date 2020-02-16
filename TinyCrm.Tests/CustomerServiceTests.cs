@@ -8,29 +8,29 @@ using TinyCrm.Core.Model.Options;
 
 namespace TinyCrm.Tests
 {
-    public class CustomerServiceTests:IClassFixture<TinyCrmFixtures>
+    public class CustomerServiceTests:IClassFixture<TinyCrmFixture>
     {
         private TinyCrmDbContext context_;
         private ICustomerService service_;
 
 
-        public CustomerServiceTests(TinyCrmFixtures fixtures)
+        public CustomerServiceTests(TinyCrmFixture fixtures)
         {
             context_ = fixtures.Context_;
             service_ = fixtures.Customer;
-            
         }
 
         [Fact]
-        public void CreateCustomer_Success()
+        public Customer CreateCustomer_Success()
         {
-          
+            ICustomerService customerService =
+                new CustomerService(context_);
 
             var options = new CreateCustomerOptions()
             {   
-                Email = "dd@dfdd.gr",
-                FirstName = "Dimmitrios",
-                VatNumber = "117001289"
+                Email = "ele@ana.gr",
+                FirstName = "Eleana",
+                VatNumber = "118001281"
             };
 
             var customer = service_.Create(options);
@@ -48,17 +48,23 @@ namespace TinyCrm.Tests
             
             };
 
-            var lookupcustomer = service_.Search(searchcustomer);
-            
-            Assert.True(lookupcustomer.Count() == 1);
-            Assert.Single(lookupcustomer);
+            var lookupcustomer = customerService
+                .Search(searchcustomer)
+                
+                .SingleOrDefault(); ;
+
+            Assert.NotNull(customer);
+
+            Assert.Equal(customer.Id, lookupcustomer.Id);
             
 
+            return customer;
         }
 
         [Fact]
         public void CreateCustomer_Fail_Null_VatNumber()
         {
+
             var options = new CreateCustomerOptions()
             {
                 Email="ddd@mark.gr",

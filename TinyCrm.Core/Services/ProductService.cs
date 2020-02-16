@@ -19,11 +19,7 @@ namespace TinyCrm.Core.Services
            context=dbContext;
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
+        
         public ApiResult<Product> AddProduct(AddProductOptions options)
         {
             var result = new ApiResult<Product>();
@@ -72,65 +68,24 @@ namespace TinyCrm.Core.Services
             return result ;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public Product UpdateProduct(Guid productId,
-            UpdateProductOptions options)
+
+        public ApiResult<Product> GetProductById(Guid id)
         {
-            if (options == null) {
-                return null;
+            var product = context
+                .Set<Product>()
+                .SingleOrDefault(s => s.Id == id);
+
+            if (product == null)
+            {
+                return new ApiResult<Product>(
+                    StatusCode.NotFound, $"Product {id} not found");
             }
 
-            var product = GetProductById(productId);
-            if (product == null) { 
-                return null; 
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.Description)) {
-                product.Description = options.Description;
-            }
-
-            if (options.Price != null &&
-              options.Price <= 0) {
-                return null;
-            }
-
-            if (options.Price != null) {
-                if (options.Price <= 0) {
-                    return null;
-                } else {
-                    product.Price = options.Price.Value;
-                }
-            }
-
-            if (options.Discount != null &&
-              options.Discount < 0) {
-                return null;
-            }
-
-            return 
-                product;
+            return ApiResult<Product>.CreateSuccessful(product);
         }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Product GetProductById(Guid id)
-        {
-            var o = new Guid();
-            if (o == id) {
-                return null;
-            } 
 
-            return ProductsList.
-                SingleOrDefault(s => s.Id.Equals(id));
-        }
+
+       
         public int SumOfStocks()
         {
             var sum = context.Set<Product>().AsQueryable().
@@ -140,7 +95,7 @@ namespace TinyCrm.Core.Services
         }
 
 
-        public List<Product> SearchProduct(
+        public IQueryable<Product> SearchProduct(
            SearchProductOptions options)
         {
 
@@ -184,7 +139,7 @@ namespace TinyCrm.Core.Services
                       .Where(c => c.Category==options.Category);
             }
 
-            return query.ToList();
+            return query;
 
         }
     }

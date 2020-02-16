@@ -11,7 +11,7 @@ namespace TinyCrm.Core.Model
         /// <summary>
         /// 
         /// </summary>
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 

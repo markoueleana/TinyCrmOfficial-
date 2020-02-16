@@ -15,7 +15,7 @@ namespace TinyCrm.Core.Data
         public TinyCrmDbContext()
         {
             connectionString_ =
-                "Server =localhost; Database=Tiny-CRM-official; Integrated Security = SSPI; Persist Security Info=False;";
+                "Server =localhost; Database=Tiny-Crm; Integrated Security = SSPI; Persist Security Info=False;";
         }
         
         public TinyCrmDbContext(string connString)

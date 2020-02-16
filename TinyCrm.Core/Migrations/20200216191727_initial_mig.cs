@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TinyCrm.Core.Migrations
 {
-    public partial class initial : Migration
+    public partial class initial_mig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,7 +15,8 @@ namespace TinyCrm.Core.Migrations
                 schema: "core",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Phone = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
@@ -54,6 +55,7 @@ namespace TinyCrm.Core.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     DeliveryAddress = table.Column<string>(nullable: true),
                     CreateDatetime = table.Column<DateTimeOffset>(nullable: false),
+                    CustomerId1 = table.Column<int>(nullable: true),
                     CustomerId = table.Column<Guid>(nullable: false),
                     Status = table.Column<int>(nullable: false)
                 },
@@ -61,12 +63,12 @@ namespace TinyCrm.Core.Migrations
                 {
                     table.PrimaryKey("PK_Order", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_Customer_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_Order_Customer_CustomerId1",
+                        column: x => x.CustomerId1,
                         principalSchema: "core",
                         principalTable: "Customer",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,10 +107,10 @@ namespace TinyCrm.Core.Migrations
                 filter: "[VatNumber] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_CustomerId",
+                name: "IX_Order_CustomerId1",
                 schema: "core",
                 table: "Order",
-                column: "CustomerId");
+                column: "CustomerId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderProduct_ProductId",

@@ -6,11 +6,8 @@ using TinyCrm.Core.Model.Options;
 
 namespace TinyCrm.Core.Services
 {
-   public interface IOrderService
+    public interface IOrderService
     {
-        List<Order> SearchOrder(SearchOrderOptions options);
-        ApiResult<Order> CreateOrder(CreateOrderOptions opionsOrd,
-            SearchCustomerOptions optionsCus,
-            SearchProductOptions optionsProd);
+        ApiResult<Order> CreateOrder(CreateOrderOptions options);
     }
 }
