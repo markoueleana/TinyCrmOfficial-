@@ -24,11 +24,13 @@ namespace TinyCrm.Core.Model.Options
             ErrorText = errotext;
         }
 
+
+
+
+
         public static ApiResult<T> Create<Y>(
             ApiResult<Y> result) 
         {
-
-
             return new ApiResult<T>()
             {
                 ErrorCode = result.ErrorCode,
@@ -48,6 +50,18 @@ namespace TinyCrm.Core.Model.Options
             };
         
         }
+
+        public static ApiResult<T> CreateUnsuccesfull
+          (StatusCode statusCode , string errorText)
+        {
+            return new ApiResult<T>()
+            {
+                ErrorCode = statusCode,
+                ErrorText=errorText
+            };
+
+        }
+    
     }
 
 }

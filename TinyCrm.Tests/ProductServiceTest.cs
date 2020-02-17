@@ -13,8 +13,8 @@ namespace TinyCrm.Tests
     public class ProductServiceTest:
         IClassFixture<TinyCrmFixture>
     {
-        private TinyCrmDbContext context_;
-        private IProductService services_;
+        readonly TinyCrmDbContext context_;
+        readonly IProductService services_;
 
         public ProductServiceTest(TinyCrmFixture fixture)
         {

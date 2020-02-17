@@ -30,7 +30,7 @@ namespace TinyCrm.Tests
             {   
                 Email = "ele@ana.gr",
                 FirstName = "Eleana",
-                VatNumber = "118001281"
+                VatNumber = "118001276"
             };
 
             var customer = service_.Create(options);

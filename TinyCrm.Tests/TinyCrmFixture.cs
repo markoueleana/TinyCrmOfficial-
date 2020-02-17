@@ -13,8 +13,11 @@ namespace TinyCrm.Tests
         public IProductService Products { get; private set; }
         public ICustomerService Customer { get; private set; }
         public IOrderService Order { get; private set; }
+
+        public IReportService Report { get; private set; }
         public TinyCrmFixture() 
         {
+            Report = new ReportService(Context_);
             Order = new OrderService(Context_);
             Context_= new TinyCrmDbContext();
             Products = new ProductService(Context_);

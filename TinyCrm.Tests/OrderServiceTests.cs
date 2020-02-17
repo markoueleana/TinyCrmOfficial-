@@ -19,11 +19,13 @@ namespace TinyCrm.Tests
         private IOrderService order_;
         private ProductServiceTest productServiceTests_;
         private CustomerServiceTests customerServiceTests_;
+        /*private OrderServiceTests orderServiceTests_;*/
 
 
         public OrderServiceTests(
             TinyCrmFixture fixture)
         {
+           /* orderServiceTests_ = new OrderServiceTests(fixture);*/
             productServiceTests_ = new ProductServiceTest(fixture);
             context_ = fixture.Context_;
             customer_ = fixture.Customer;
@@ -33,7 +35,7 @@ namespace TinyCrm.Tests
         }
 
         [Fact]
-        public void CreateOrder_Success()
+        public Order CreateOrder_Success()
         {
             var customer = customerServiceTests_.CreateCustomer_Success();
             var p1 = productServiceTests_.AddProductService_Success();
@@ -63,7 +65,9 @@ namespace TinyCrm.Tests
                     .SingleOrDefault();
 
                 Assert.NotNull(op);
+                
             }
+            return order;
         }
 
         [Fact]
@@ -105,5 +109,26 @@ namespace TinyCrm.Tests
 
 
         }
+        [Fact]
+
+        public void SearchOrder_Success()
+        {
+            var createOrder = CreateOrder_Success();
+
+            var options = new SearchOrderOptions()
+            {
+                CustomerId = createOrder.CustomerId,
+                OrderId = createOrder.Id,
+                VatNumber = createOrder.Customer.VatNumber
+            };
+            var results = order_.SearchOrder(options);
+
+            Assert.Equal(StatusCode.Success, results.ErrorCode);
+
+
+
+        }
+
+       
     }
 }
